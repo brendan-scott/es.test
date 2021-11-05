@@ -1,0 +1,43 @@
+﻿@using Emergent.Code.Test.Models.DTOs
+@model Emergent.Code.Test.Models.ViewModels.SoftwareViewModel
+
+@{
+    if (Model == default) return;
+}
+
+<div class="col-12" id="software-container">
+    <br />
+    @if (ViewData.ModelState.IsValid)
+    {
+        if (Model.Software.Any())
+        {
+            <h3>Eligible Software Program@(Model.Software.Count > 1 ? "s" : string.Empty)</h3>
+            <span class="text-muted">(@Model.Version &#8773; @($"{Model.Normalized.Major}.{Model.Normalized.Minor}.{Model.Normalized.Patch}"))</span>
+            <hr />
+            @foreach (IGrouping<string, SoftwareDTO> group in Model.Software.OrderBy(x => x.Name).GroupBy(x => x.Name))
+            {
+                <h5>@group.Key</h5>
+                <ul>
+                    @foreach (SoftwareDTO version in group)
+                    {
+                        <li>@version.Version</li>
+                    }
+                </ul>
+            }
+        }
+        else if (!string.IsNullOrEmpty(Model.Version))
+        {
+            <div class="alert-warning" style="padding: 15px;">
+                <p>
+                    Currently, <i>zero</i> of our software products have a version greater than '@($"{Model.Normalized.Major}.{Model.Normalized.Minor}.{Model.Normalized.Patch}")', please adjust and then try again.
+                </p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 alert-danger" style="padding: 15px;">
+            @Html.ValidationSummary()
+        </div>
+    }
+</div>
